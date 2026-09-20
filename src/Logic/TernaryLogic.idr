@@ -4,6 +4,7 @@ import Data.List
 import Data.Nat
 import Math.Multiset
 import Math.BoxInt
+import Math.OnSeq.FusedStream
 import public Core.NarayAlphabet
 
 %default covering
@@ -60,7 +61,7 @@ public export
 Num Bit3 where
   (+) = addBit3
   (*) = mulBit3
-  fromInteger n = case mod (if n >= 0 then n else (3 - ((-n) `mod` 3))) 3 of
+  fromInteger n = case Prelude.mod (if n >= 0 then n else (3 - ((-n) `Prelude.mod` 3))) 3 of
                     1 => Bit3PlusOne
                     2 => Bit3MinusOne
                     _ => Bit3Zero
@@ -120,9 +121,10 @@ mulTernaryPoly (AddM ki ci rest) ys =
       in insertItem prodIdx prodCoeff (mulInner ki ci rest)
 
 ------------------------------------------------------------------------
--- 4. 3-VALUED MÖBIUS TRANSFORM & TRUTH TABLES
+-- 4. 3-VALUED MÖBIUS TRANSFORM & STREAM TRANSDUCERS
 ------------------------------------------------------------------------
- 
+
+||| DEPRECATED: Use FusedStream Bit3 transducers directly.
 ||| Converts a 3-valued truth table list of 3^N Bit3 entries into a sparse multiset.
 public export
 denseToSparse3 : List Bit3 -> Multiset Bit3 Nat
@@ -135,6 +137,7 @@ denseToSparse3 = go 0
         then go (S idx) rest
         else AddM idx x (go (S idx) rest)
 
+||| DEPRECATED: Use FusedStream Bit3 transducers directly.
 ||| Converts a sparse ternary multiset into a dense 3^N Bit3 list.
 public export
 sparseToDense3 : (size : Nat) -> Multiset Bit3 Nat -> List Bit3
@@ -146,6 +149,7 @@ sparseToDense3 size m = map (\idx => lookupTVal idx m) [0 .. minus size 1]
       if k == idx then addBit3 v (lookupTVal idx rest)
       else lookupTVal idx rest
 
+||| DEPRECATED: Use evalTernaryLogicStream directly.
 ||| Computes the 3-valued Möbius transform over a 3-valued truth table list.
 public export
 mobiusTransform3 : List Bit3 -> List Bit3
@@ -159,6 +163,21 @@ mobiusTransform3 table =
     getAt Z (x :: _) = x
     getAt (S k) (_ :: xs) = getAt k xs
     getAt _ [] = Bit3Zero
+
+||| Evaluates an allocation-free deforested stream transducer over F3 balanced ternary values.
+public export
+evalTernaryLogicStream : (Bit3 -> Bit3 -> Bit3) -> FusedStream Bit3 -> FusedStream Bit3 -> FusedStream Bit3
+evalTernaryLogicStream op (MkStream {s=s1} nextA seedA) (MkStream {s=s2} nextB seedB) =
+  MkStream {s = (s1, s2)} nextBoth (seedA, seedB)
+  where
+    nextBoth : (s1, s2) -> Step (s1, s2) Bit3
+    nextBoth (stA, stB) = case (nextA stA, nextB stB) of
+      (Done, _) => Done
+      (_, Done) => Done
+      (Skip sA', Skip sB') => Skip (sA', sB')
+      (Skip sA', Yield _ sB') => Skip (sA', stB)
+      (Yield _ sA', Skip sB') => Skip (stA, sB')
+      (Yield vA sA', Yield vB sB') => Yield (op vA vB) (sA', sB')
 
 ------------------------------------------------------------------------
 -- 5. FORMAL THEOREMS & INVARIANTS OF TERNARY LOGIC

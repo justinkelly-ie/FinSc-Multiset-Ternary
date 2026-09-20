@@ -3,15 +3,13 @@ version = 0.1.0
 authors = "Justin Kelly"
 brief   = "Layer 2b Dependent Alphabet (F2 -> F3) and Narayana Polynomial Engine."
 
-depends = base
-        , Idris2-Multiset-Core
-        , Idris2-Multiset-Binary
-
-modules = Core.NarayAlphabet
-        , Math.NarayanaPolynomial
-        , Math.AlgebraOfBoole
-        , Reflect.NarayElab
-        , Linear.NarayState
-        , Logic.TernaryLogic
-
+depends = Idris2-Multiset-Core, base, linear
 sourcedir = "src"
+
+modules = Core.NarayAlphabet,
+          Linear.NarayState,
+          Logic.TernaryLogic,
+          Math.AlgebraOfBoole,
+          Math.NarayanaPolynomial,
+          Reflect.NarayElab
+
