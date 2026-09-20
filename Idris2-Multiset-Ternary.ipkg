@@ -6,7 +6,8 @@ brief   = "Layer 2b Dependent Alphabet (F2 -> F3) and Narayana Polynomial Engine
 depends = Idris2-Multiset-Core, base, linear
 sourcedir = "src"
 
-modules = Core.NarayAlphabet,
+modules = Ternary,
+          Core.NarayAlphabet,
           Linear.NarayState,
           Logic.TernaryLogic,
           Math.AlgebraOfBoole,
