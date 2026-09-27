@@ -1,6 +1,6 @@
-module Math.AlgebraOfBoole
+module Stage1.AlgebraOfBoole
 
-import public Core.NarayAlphabet
+import public Stage0.NarayAlphabet
 import Data.Vect
 
 %default total

@@ -1,8 +1,8 @@
-module Reflect.NarayElab
+module Stage0.NarayElab
 
-import public Core.NarayAlphabet
-import public Math.NarayanaPolynomial
-import public Math.AlgebraOfBoole
+import public Stage0.NarayAlphabet
+import public Stage1.NarayanaPolynomial
+import public Stage1.AlgebraOfBoole
 import Data.Vect
 import Language.Reflection
 
@@ -54,32 +54,32 @@ auditInvariant False = fail "Compile-time invariant audit failed!"
 
 ||| Explicit proof witness for Catalan summation for n=2 and n=3.
 public export
-auditCatalan2ProofExport : Reflect.NarayElab.auditCatalanProof 2 = True
+auditCatalan2ProofExport : Stage0.NarayElab.auditCatalanProof 2 = True
 auditCatalan2ProofExport = Refl
 
 public export
-auditCatalan3ProofExport : Reflect.NarayElab.auditCatalanProof 3 = True
+auditCatalan3ProofExport : Stage0.NarayElab.auditCatalanProof 3 = True
 auditCatalan3ProofExport = Refl
 
 ||| Explicit proof witness for unit groups for n=2 and n=3.
 public export
-auditUnitGroup2ProofExport : Reflect.NarayElab.auditUnitGroupProof 2 = True
+auditUnitGroup2ProofExport : Stage0.NarayElab.auditUnitGroupProof 2 = True
 auditUnitGroup2ProofExport = Refl
 
 public export
-auditUnitGroup3ProofExport : Reflect.NarayElab.auditUnitGroupProof 3 = True
+auditUnitGroup3ProofExport : Stage0.NarayElab.auditUnitGroupProof 3 = True
 auditUnitGroup3ProofExport = Refl
 
 ||| Explicit proof witness for metric state capacity for n=2 and n=3.
 public export
-auditMetricCapacity2ProofExport : Reflect.NarayElab.auditMetricCapacityProof 2 = True
+auditMetricCapacity2ProofExport : Stage0.NarayElab.auditMetricCapacityProof 2 = True
 auditMetricCapacity2ProofExport = Refl
 
 public export
-auditMetricCapacity3ProofExport : Reflect.NarayElab.auditMetricCapacityProof 3 = True
+auditMetricCapacity3ProofExport : Stage0.NarayElab.auditMetricCapacityProof 3 = True
 auditMetricCapacity3ProofExport = Refl
 
 ||| Explicit proof witness for Algebra of Boole F2 ring axioms.
 public export
-auditBooleRingProofExport : Reflect.NarayElab.auditBooleRingProof = True
+auditBooleRingProofExport : Stage0.NarayElab.auditBooleRingProof = True
 auditBooleRingProofExport = Refl

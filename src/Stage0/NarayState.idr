@@ -1,6 +1,6 @@
-module Linear.NarayState
+module Stage0.NarayState
 
-import public Core.NarayAlphabet
+import public Stage0.NarayAlphabet
 import public Math.NarayanaPolynomial
 import Data.Vect
 

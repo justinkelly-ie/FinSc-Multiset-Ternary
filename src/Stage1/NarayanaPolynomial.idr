@@ -1,6 +1,6 @@
-module Math.NarayanaPolynomial
+module Stage1.NarayanaPolynomial
 
-import public Math.BoxInt
+import public Stage0.BoxInt
 import Data.Vect
 
 %default total

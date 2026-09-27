@@ -3,9 +3,9 @@
 [![Idris 2 Verification](https://img.shields.io/badge/Idris_2-0.8.0-blue.svg)](https://www.idris-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Layer 2c Balanced Ternary Algebras, Narayana Polynomials & 3-State Spatial Sifting for Idris 2**
+**Layer 3 Balanced Ternary Algebras, Narayana Polynomials & 3-State Spatial Sifting for Idris 2**
 
-`FinSc-Multiset-Ternary` forms **Layer 2c** of the 10-layer constructive non-linear multiset science framework. It provides balanced ternary algebra ($\mathbb{F}_3$), 3-state spatial logic singletons (`MinusOne`, `Zero`, `PlusOne`), Narayana combinatorial polynomials $N(n, k)$, catalytic partition geometry, tri-state QTT linear state channels, and compile-time `%macro` reflection provers.
+`FinSc-Multiset-Ternary` forms **Layer 3** of the 10-layer constructive non-linear multiset science framework. It provides balanced ternary algebra ($\mathbb{F}_3$), 3-state spatial logic singletons (`MinusOne`, `Zero`, `PlusOne`), Narayana combinatorial polynomials $N(n, k)$, catalytic partition geometry, tri-state QTT linear state channels, and compile-time `%macro` reflection provers.
 
 ---
 

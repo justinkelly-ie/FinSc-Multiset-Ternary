@@ -1,13 +1,16 @@
-module Logic.TernaryLogic
+module Stage1.TernaryLogic
 
 import Data.List
 import Data.Nat
-import Math.Multiset
-import Math.BoxInt
-import Math.OnSeq.FusedStream
-import Core.Order.Preorder
+import Stage0.Multiset
+import Stage0.BoxInt
+import Stage0.OnSeq.FusedStream
+import Stage1.Order.Preorder
+import Stage1.TypeTheory.Staging
+import Stage1.TypeTheory.TwoLevel
 import Data.Fuel
-import public Core.NarayAlphabet
+import public Stage0.NarayAlphabet
+
 
 %default covering
 
@@ -292,4 +295,19 @@ fusedTriadicTensorStream f bits =
     (\step, acc => bit3Val step :: acc)
     []
     (1, mobiusTransform3 bits)
+
+------------------------------------------------------------------------
+-- 8. 2LTT STAGING CODE GENERATOR TRANSDUCER
+------------------------------------------------------------------------
+
+||| Deforested 2LTT staged code generator transducer for triadic stream evaluation.
+%inline public export
+stagedTernaryLogicStream : (op : Bit3 -> Bit3 -> Bit3) -> FusedStream Bit3 -> FusedStream Bit3 -> Code (FusedStream Bit3)
+stagedTernaryLogicStream op s1 s2 = quote (evalTernaryLogicStream op s1 s2)
+
+||| QTT 0 erased proof witness verifying triadic stream staging inverse identity.
+public export
+0 prfStagedTernaryLogicStream : (op : Bit3 -> Bit3 -> Bit3) -> (s1, s2 : FusedStream Bit3) -> splice (stagedTernaryLogicStream op s1 s2) = evalTernaryLogicStream op s1 s2
+prfStagedTernaryLogicStream op s1 s2 = inverseSpliceQuote (evalTernaryLogicStream op s1 s2)
+
 

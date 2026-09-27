@@ -1,8 +1,8 @@
-module Core.NarayAlphabet
+module Stage0.NarayAlphabet
 
-import Math.BoxInt
-import Core.ScaleTransform
-import public Math.Singleton.Bit
+import Stage0.BoxInt
+import Stage1.ScaleTransform
+import public Stage0.Singleton.Bit
 
 %default total
 

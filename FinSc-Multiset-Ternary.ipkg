@@ -1,5 +1,5 @@
 package FinSc-Multiset-Ternary
-version = 0.1.0
+version = 0.2.0
 authors = "Justin Kelly"
 brief   = "Layer 2b Dependent Alphabet (F2 -> F3) and Narayana Polynomial Engine."
 
@@ -7,10 +7,9 @@ depends = FinSc-Multiset-Core, base, linear
 sourcedir = "src"
 
 modules = Ternary,
-          Core.NarayAlphabet,
-          Linear.NarayState,
-          Logic.TernaryLogic,
-          Math.AlgebraOfBoole,
-          Math.NarayanaPolynomial,
-          Reflect.NarayElab
-
+          Stage0.NarayAlphabet,
+          Stage0.NarayState,
+          Stage0.NarayElab,
+          Stage1.TernaryLogic,
+          Stage1.AlgebraOfBoole,
+          Stage1.NarayanaPolynomial
