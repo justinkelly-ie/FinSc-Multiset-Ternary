@@ -3,7 +3,7 @@ version = 0.2.0
 authors = "Justin Kelly"
 brief   = "Layer 2b Dependent Alphabet (F2 -> F3) and Narayana Polynomial Engine."
 
-depends = FinSc-Multiset-Core, base, linear
+depends = FinSc-Multiset, FinSc-Metric-Substrate, base, linear
 sourcedir = "src"
 
 modules = Ternary,
