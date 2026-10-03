@@ -7,6 +7,8 @@ depends = FinSc-Multiset-Core, base, linear
 sourcedir = "src"
 
 modules = Ternary,
+          Ternary.Stage0,
+          Ternary.Stage1,
           Stage0.NarayAlphabet,
           Stage0.NarayState,
           Stage0.NarayElab,
