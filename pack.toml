@@ -1,14 +1,14 @@
 [package]
-name = "FinSc-Multiset-Ternary"
+name = "FinSc-Radix-Ternary"
 version = "0.3.0"
-ipkg = "FinSc-Multiset-Ternary.ipkg"
+ipkg = "FinSc-Radix-Ternary.ipkg"
 
 [custom.all.FinSc-Multiset-Core]
 type = "local"
 path = "../FinSc-Multiset-Core"
 ipkg = "FinSc-Multiset-Core.ipkg"
 
-[custom.all.FinSc-Multiset-Binary]
+[custom.all.FinSc-Radix-Binary]
 type = "local"
-path = "../FinSc-Multiset-Binary"
-ipkg = "FinSc-Multiset-Binary.ipkg"
+path = "../FinSc-Radix-Binary"
+ipkg = "FinSc-Radix-Binary.ipkg"

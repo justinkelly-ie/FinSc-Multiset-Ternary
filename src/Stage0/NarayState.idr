@@ -1,7 +1,6 @@
 module Stage0.NarayState
 
 import public Stage0.NarayAlphabet
-import public Math.NarayanaPolynomial
 import Data.Vect
 
 %default total
