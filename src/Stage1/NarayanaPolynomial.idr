@@ -1,6 +1,7 @@
 module Stage1.NarayanaPolynomial
 
 import public Stage0.BoxInt
+import Stage0.OnSeq.FusedStream
 import Data.Vect
 
 %default total
@@ -95,3 +96,39 @@ narayanaVector n = generateVector n n
       let k = minus totalN j
           nk = narayanaNumber totalN k
       in nk :: generateVector j totalN
+
+--------------------------------------------------------------------------------
+-- STAGED HORNER EVALUATION & TERNARY RADIX STREAMING TRANSDUCER
+--------------------------------------------------------------------------------
+
+||| Staged Horner vector unrolling for polynomial evaluation in ternary basis:
+public export
+evalHornerVectTernary : Vect n BoxInt -> BoxInt -> BoxInt
+evalHornerVectTernary [] _ = intToBoxInt 0
+evalHornerVectTernary (c :: cs) x =
+  foldl (\acc, coeff => addBox (mulBox acc x) coeff) c cs
+
+||| Deforested stream transducer emitting balanced ternary radix trits (-1, 0, 1):
+public export
+streamTernaryRadixDigits : Nat -> FusedStream Integer
+streamTernaryRadixDigits val =
+  unfoldStream (\n =>
+    if n == 0
+      then Done
+      else
+        let rem : Nat = n `mod` 3
+            nextN : Nat = n `div` 3
+            trit : Integer = if rem == 2 then (-1) else cast rem
+            adjustedNext : Nat = if rem == 2 then nextN + 1 else nextN
+        in Yield trit adjustedNext
+  ) val
+
+||| Compile-time audit verifying Horner vector evaluation on ternary basis:
+public export
+auditHornerTernaryStreamProof : Bool
+auditHornerTernaryStreamProof =
+  let coeffs = [intToBoxInt 1, intToBoxInt 2, intToBoxInt 0]
+      x = intToBoxInt 3
+      val = evalHornerVectTernary coeffs x
+  in unwrapBox val == 15
+

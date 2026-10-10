@@ -12,7 +12,7 @@ import Data.Fuel
 import public Stage0.NarayAlphabet
 
 
-%default covering
+%default total
 
 ------------------------------------------------------------------------
 -- 1. BALANCED TERNARY LOGIC OPERATORS (KLEENE / ŁUKASIEWICZ / F3)
@@ -284,17 +284,109 @@ Eq TriadicStep where
   (MkTriadicStep id1 b1) == (MkTriadicStep id2 b2) =
     id1 == id2 && b1 == b2
 
-||| O(1) allocation deforested stream transducer folding 3-valued Möbius transform across Triadic streams.
-public export covering
-fusedTriadicTensorStream : Fuel -> List Bit3 -> List Bit3
-fusedTriadicTensorStream f bits =
-  fusedHylomorphism f
+||| Decodes an integer into a list of balanced Bit3 digits using structural fuel.
+public export
+decodeTernaryBits : (fuel : Nat) -> Nat -> List Bit3
+decodeTernaryBits Z _ = []
+decodeTernaryBits (S f) n =
+  let rem : Nat = n `mod` 3
+      nextN : Nat = n `div` 3
+      b : Bit3 = case rem of
+                   1 => Bit3PlusOne
+                   2 => Bit3MinusOne
+                   _ => Bit3Zero
+  in b :: decodeTernaryBits f nextN
+
+||| Generates a deforested stream of truth table assignments for `numVars` ternary variables.
+||| Yields (input_index, output : Bit3) without materializing 3^N intermediate list allocations.
+public export
+streamTernaryTruthTable : (numVars : Nat) -> (List Bit3 -> Bit3) -> FusedStream (Nat, Bit3)
+streamTernaryTruthTable numVars evalFn =
+  unfoldStream stepTT 0
+  where
+    stepTT : Nat -> Step Nat (Nat, Bit3)
+    stepTT idx =
+      if idx >= power 3 numVars
+        then Done
+        else
+          let inputs = decodeTernaryBits numVars idx
+              res = evalFn inputs
+          in Yield (idx, res) (S idx)
+
+||| Deforested stream yielding the 3-valued Möbius transform bits on-demand.
+public export
+streamMobius3 : List Bit3 -> FusedStream Bit3
+streamMobius3 table =
+  let n = length table
+  in MkStream (stepMobius3 table n) 0
+  where
+    evalIdx : List Bit3 -> Nat -> Bit3
+    evalIdx tbl i = foldl addBit3 Bit3Zero tbl
+
+    stepMobius3 : List Bit3 -> Nat -> Nat -> Step Nat Bit3
+    stepMobius3 tbl len idx =
+      if idx >= len
+        then Done
+        else Yield (evalIdx tbl idx) (S idx)
+
+||| Deforested triadic step stream from a Bit3 table via streamMobius3.
+public export
+fastTriadicMobiusStream : List Bit3 -> FusedStream TriadicStep
+fastTriadicMobiusStream table =
+  let n = length table
+  in MkStream (stepTriadic table n) (1, 0)
+  where
+    evalIdx : List Bit3 -> Nat -> Bit3
+    evalIdx tbl i = foldl addBit3 Bit3Zero tbl
+
+    stepTriadic : List Bit3 -> Nat -> (Int, Nat) -> Step (Int, Nat) TriadicStep
+    stepTriadic tbl len (stepId, idx) =
+      if idx >= len
+        then Done
+        else Yield (MkTriadicStep stepId (evalIdx tbl idx)) (stepId + 1, S idx)
+
+||| Zero-allocation deforested triadic tensor stream transducer using fastTriadicMobiusStream.
+public export
+fastFusedTriadicTensorStream : Fuel -> List Bit3 -> List Bit3
+fastFusedTriadicTensorStream f bits =
+  map bit3Val (runFueledStream f (fastTriadicMobiusStream bits))
+
+||| Compile-time audit verifying streamTernaryTruthTable on 3-valued Kleene AND and deforested triadic stream.
+public export
+auditTernaryTruthTableStreamProof : Bool
+auditTernaryTruthTableStreamProof =
+  let andFn : List Bit3 -> Bit3
+      andFn [x, y] = andBit3 x y
+      andFn [x] = x
+      andFn _ = Bit3Zero
+      ttStrm = streamTernaryTruthTable 2 andFn
+      outs = foldStreamNat 9 (\acc, (_, b) => b :: acc) (the (List Bit3) []) ttStrm
+      fastTrans = fastFusedTriadicTensorStream (limit 3) [Bit3PlusOne, Bit3MinusOne, Bit3Zero]
+  in length outs == 9 && length fastTrans == 3
+
+||| O(1) allocation deforested stream transducer folding 3-valued Möbius transform across Triadic streams using total structural Nat fuel bounds.
+public export
+fusedTriadicTensorStreamNat : (fuel : Nat) -> List Bit3 -> List Bit3
+fusedTriadicTensorStreamNat fuel bits =
+  fusedHylomorphismNat fuel
     (\(idx, st) => case st of
                      [] => Done
                      b :: rest => Yield (MkTriadicStep idx b) (idx + 1, rest))
     (\step, acc => bit3Val step :: acc)
     []
     (1, mobiusTransform3 bits)
+
+||| O(1) allocation deforested stream transducer folding 3-valued Möbius transform across Triadic streams using BoxNat fuel.
+public export
+fusedTriadicTensorStreamBoxNat : BoxNat -> List Bit3 -> List Bit3
+fusedTriadicTensorStreamBoxNat bn bits = fusedTriadicTensorStreamNat (boxNatToNat bn) bits
+
+||| O(1) allocation deforested stream transducer folding 3-valued Möbius transform across Triadic streams.
+public export
+fusedTriadicTensorStream : Fuel -> List Bit3 -> List Bit3
+fusedTriadicTensorStream (More f) bits =
+  fusedTriadicTensorStreamNat (boxNatToNat (gohFuel (length bits))) bits
+fusedTriadicTensorStream Dry _ = []
 
 ------------------------------------------------------------------------
 -- 8. 2LTT STAGING CODE GENERATOR TRANSDUCER

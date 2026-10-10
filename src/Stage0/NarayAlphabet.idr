@@ -3,6 +3,8 @@ module Stage0.NarayAlphabet
 import Stage0.BoxInt
 import Stage1.ScaleTransform
 import public Stage0.Singleton.Bit
+import Stage0.OnSeq.FusedStream
+import Data.Fuel
 
 %default total
 
@@ -132,3 +134,29 @@ InvertibleScaleTransform Bit3 Integer where
     if n <= -1 then Bit3MinusOne
     else if n == 0 then Bit3Zero
     else Bit3PlusOne
+
+------------------------------------------------------------------------
+-- STREAMING HORNER TERNARY EXPANSION
+------------------------------------------------------------------------
+
+||| Evaluates a stream of balanced ternary trits into an integer value via fused Horner expansion (radix = 3).
+public export
+streamHornerTernary : Fuel -> FusedStream Bit3 -> BoxInt
+streamHornerTernary f strm =
+  foldStreamFuel f
+    (\acc, t =>
+      let tInt = intToBoxInt (bit3ToInt t)
+      in addBox (mulBox acc (intToBoxInt 3)) tInt)
+    (intToBoxInt 0)
+    strm
+
+||| Audits that 3 ternary trits (+1, 0, 0)_3 evaluate to 9, and (+1, 0, 0, 0)_3 evaluates to 27 (Elliptic manifest space).
+public export
+auditStreamHornerTernaryProof : Bool
+auditStreamHornerTernaryProof =
+  let tritStream3 = stream [Bit3PlusOne, Bit3Zero, Bit3Zero]
+      tritStream4 = stream [Bit3PlusOne, Bit3Zero, Bit3Zero, Bit3Zero]
+      v9  = streamHornerTernary (limit 3) tritStream3
+      v27 = streamHornerTernary (limit 4) tritStream4
+  in unwrapBox v9 == 9 && unwrapBox v27 == 27
+
