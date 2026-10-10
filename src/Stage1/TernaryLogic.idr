@@ -313,6 +313,19 @@ streamTernaryTruthTable numVars evalFn =
               res = evalFn inputs
           in Yield (idx, res) (S idx)
 
+||| Generates a deforested stream of truth table assignments for `numVars` ternary variables
+||| directly consuming an index evaluator (Nat -> Bit3) without any intermediate List allocations.
+public export
+streamTernaryTruthTableDirect : (numVars : Nat) -> (Nat -> Bit3) -> FusedStream (Nat, Bit3)
+streamTernaryTruthTableDirect numVars evalFn =
+  unfoldStream stepTT 0
+  where
+    stepTT : Nat -> Step Nat (Nat, Bit3)
+    stepTT idx =
+      if idx >= power 3 numVars
+        then Done
+        else Yield (idx, evalFn idx) (S idx)
+
 ||| Deforested stream yielding the 3-valued Möbius transform bits on-demand.
 public export
 streamMobius3 : List Bit3 -> FusedStream Bit3
