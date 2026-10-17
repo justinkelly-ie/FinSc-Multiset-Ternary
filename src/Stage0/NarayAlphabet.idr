@@ -2,9 +2,11 @@ module Stage0.NarayAlphabet
 
 import Stage0.BoxInt
 import Stage1.ScaleTransform
+import public Stage1.TypeTheory.Smoothness
 import public Stage0.Singleton.Bit
 import Stage0.OnSeq.FusedStream
 import Data.Fuel
+import Data.Vect
 
 %default total
 
@@ -159,4 +161,69 @@ auditStreamHornerTernaryProof =
       v9  = streamHornerTernary (limit 3) tritStream3
       v27 = streamHornerTernary (limit 4) tritStream4
   in unwrapBox v9 == 9 && unwrapBox v27 == 27
+
+------------------------------------------------------------------------
+-- ELLIPTIC 27 CANONICAL TERNARY EMBEDDING (RULE 03)
+------------------------------------------------------------------------
+
+||| Evaluates a 3-trit register into an exact BoxInt scalar in [-13, 13] (Elliptic 27 capacity):
+||| val = 9*t2 + 3*t1 + t0.
+public export
+vect3TritsToBoxInt : Vect 3 Bit3 -> BoxInt
+vect3TritsToBoxInt [t2, t1, t0] =
+  let v2 = mulBox (intToBoxInt (bit3ToInt t2)) (intToBoxInt 9)
+      v1 = mulBox (intToBoxInt (bit3ToInt t1)) (intToBoxInt 3)
+      v0 = intToBoxInt (bit3ToInt t0)
+  in addBox v2 (addBox v1 v0)
+
+||| Helper to convert an integer scalar to a balanced trit:
+public export
+intToBit3Rem : Integer -> (Bit3, Integer)
+intToBit3Rem n =
+  let m = ((n + 1) `mod` 3) - 1
+      q = (n - m) `div` 3
+      b = if m <= -1 then Bit3MinusOne
+          else if m == 0 then Bit3Zero
+          else Bit3PlusOne
+  in (b, q)
+
+||| Decodes an integer scalar in [-13, 13] into a 3-trit register in balanced ternary:
+public export
+boxIntToVect3Trits : BoxInt -> Vect 3 Bit3
+boxIntToVect3Trits b =
+  let n = unwrapBox b
+      (t0, q0) = intToBit3Rem n
+      (t1, q1) = intToBit3Rem q0
+      (t2, _)  = intToBit3Rem q1
+  in [t2, t1, t0]
+
+||| Canonical Elliptic 27 Manifest Canvas Ternary Embedding:
+||| Maps 3-trit registers (3^3 = 27) directly into the Elliptic lattice state capacity.
+public export
+DepScaleTransform Stage1.TypeTheory.Smoothness.dimElliptic27 Stage1.TypeTheory.Smoothness.dimElliptic27 (Vect 3 Bit3) BoxInt where
+  depScaleTransform = vect3TritsToBoxInt
+
+public export
+InvertibleDepScaleTransform Stage1.TypeTheory.Smoothness.dimElliptic27 Stage1.TypeTheory.Smoothness.dimElliptic27 (Vect 3 Bit3) BoxInt where
+  invertDepScaleTransform = boxIntToVect3Trits
+
+||| Audits the roundtrip bijection for the 27 ternary states:
+public export
+auditTernaryDepScaleTransformProof : Bool
+auditTernaryDepScaleTransformProof =
+  let tMax : Vect 3 Bit3 = [Bit3PlusOne, Bit3PlusOne, Bit3PlusOne]
+      tMin : Vect 3 Bit3 = [Bit3MinusOne, Bit3MinusOne, Bit3MinusOne]
+      tZero : Vect 3 Bit3 = [Bit3Zero, Bit3Zero, Bit3Zero]
+      bMax = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} tMax
+      bMin = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} tMin
+      bZero = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} tZero
+      rtMax = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} bMax
+      rtMin = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} bMin
+      rtZero = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} bZero
+  in unwrapBox bMax == 13 && unwrapBox bMin == -13 && unwrapBox bZero == 0
+     && rtMax == tMax && rtMin == tMin && rtZero == tZero
+
+public export
+0 verifyTernaryDepScaleTransform : Stage0.NarayAlphabet.auditTernaryDepScaleTransformProof = True
+verifyTernaryDepScaleTransform = Refl
 
