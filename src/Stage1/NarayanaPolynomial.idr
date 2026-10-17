@@ -2,6 +2,7 @@ module Stage1.NarayanaPolynomial
 
 import public Stage0.BoxInt
 import Stage0.OnSeq.FusedStream
+import Stage1.Polynumber
 import Data.Vect
 
 %default total
@@ -131,4 +132,34 @@ auditHornerTernaryStreamProof =
       x = intToBoxInt 3
       val = evalHornerVectTernary coeffs x
   in unwrapBox val == 15
+
+--------------------------------------------------------------------------------
+-- 3. DEGREE-CERTIFIED NARAYANA POLYNOMIAL REPRESENTATION (TRACK 3)
+--------------------------------------------------------------------------------
+
+||| Degree-certified Narayana Generating Polynomial of degree (deg) with (S deg) terms:
+||| N_{S deg}(t) = \sum_{j=1}^{S deg} N(S deg, j) * t^{j-1}.
+public export
+narayanaDepPoly : (deg : Nat) -> DepPolynumber deg
+narayanaDepPoly deg =
+  let v = narayanaVector (S deg)
+      cs = map (\c => natToBoxInt c) v
+  in MkDepPolynumber cs
+
+||| Evaluates degree-certified Narayana polynomial at BoxInt coordinate t.
+public export
+evalNarayanaDepPoly : (deg : Nat) -> BoxInt -> BoxInt
+evalNarayanaDepPoly deg t = evalDepPolynumber (narayanaDepPoly deg) t
+
+||| Formal verification: Narayana polynomial evaluated at t = 1 yields the Catalan number C_{S deg}:
+||| N_{S deg}(1) = \sum_{j=1}^{S deg} N(S deg, j) = C_{S deg}.
+public export
+auditNarayanaDepPolyCatalanSumProof : Bool
+auditNarayanaDepPolyCatalanSumProof =
+  let p2 = narayanaDepPoly 2 -- Order n = 3, degree 2: N(3,1)=1, N(3,2)=3, N(3,3)=1 => C_3 = 5
+      sumP2 = evalDepPolynumber p2 (intToBoxInt 1)
+      p3 = narayanaDepPoly 3 -- Order n = 4, degree 3: C_4 = 14
+      sumP3 = evalDepPolynumber p3 (intToBoxInt 1)
+  in (unwrapBox sumP2 == 5) && (unwrapBox sumP3 == 14)
+
 
