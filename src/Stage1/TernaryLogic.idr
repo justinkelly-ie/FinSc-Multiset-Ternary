@@ -8,6 +8,7 @@ import Stage0.OnSeq.FusedStream
 import Stage1.Order.Preorder
 import Stage1.TypeTheory.Staging
 import Stage1.TypeTheory.TwoLevel
+import Stage1.TypeTheory.Smoothness
 import Data.Fuel
 import public Stage0.NarayAlphabet
 
@@ -364,6 +365,12 @@ fastFusedTriadicTensorStream : Fuel -> List Bit3 -> List Bit3
 fastFusedTriadicTensorStream f bits =
   map bit3Val (runFueledStream f (fastTriadicMobiusStream bits))
 
+||| Zero-allocation deforested triadic tensor stream transducer using fastTriadicMobiusStream and model-indexed GohFuel.
+public export
+fastFusedTriadicTensorStreamFuelModel : GohFuel cap -> List Bit3 -> List Bit3
+fastFusedTriadicTensorStreamFuelModel fuel bits =
+  map bit3Val (runFueledStreamFuelModel fuel (fastTriadicMobiusStream bits))
+
 ||| Compile-time audit verifying streamTernaryTruthTable on 3-valued Kleene AND and deforested triadic stream.
 public export
 auditTernaryTruthTableStreamProof : Bool
@@ -374,7 +381,7 @@ auditTernaryTruthTableStreamProof =
       andFn _ = Bit3Zero
       ttStrm = streamTernaryTruthTable 2 andFn
       outs = foldStreamNat 9 (\acc, (_, b) => b :: acc) (the (List Bit3) []) ttStrm
-      fastTrans = fastFusedTriadicTensorStream (limit 3) [Bit3PlusOne, Bit3MinusOne, Bit3Zero]
+      fastTrans = fastFusedTriadicTensorStreamFuelModel (gohFuelForCapacity 3) [Bit3PlusOne, Bit3MinusOne, Bit3Zero]
   in length outs == 9 && length fastTrans == 3
 
 ||| O(1) allocation deforested stream transducer folding 3-valued Möbius transform across Triadic streams using total structural Nat fuel bounds.
@@ -389,6 +396,12 @@ fusedTriadicTensorStreamNat fuel bits =
     []
     (1, mobiusTransform3 bits)
 
+||| O(1) allocation deforested stream transducer folding 3-valued Möbius transform across Triadic streams using model-indexed GohFuel.
+public export
+fusedTriadicTensorStreamFuelModel : GohFuel cap -> List Bit3 -> List Bit3
+fusedTriadicTensorStreamFuelModel fuel bits =
+  fusedTriadicTensorStreamNat (gohSteps fuel) bits
+
 ||| O(1) allocation deforested stream transducer folding 3-valued Möbius transform across Triadic streams using BoxNat fuel.
 public export
 fusedTriadicTensorStreamBoxNat : BoxNat -> List Bit3 -> List Bit3
@@ -398,7 +411,7 @@ fusedTriadicTensorStreamBoxNat bn bits = fusedTriadicTensorStreamNat (boxNatToNa
 public export
 fusedTriadicTensorStream : Fuel -> List Bit3 -> List Bit3
 fusedTriadicTensorStream (More f) bits =
-  fusedTriadicTensorStreamNat (boxNatToNat (gohFuel (length bits))) bits
+  fusedTriadicTensorStreamNat (gohSteps (gohFuelForCapacity (length bits))) bits
 fusedTriadicTensorStream Dry _ = []
 
 ------------------------------------------------------------------------
