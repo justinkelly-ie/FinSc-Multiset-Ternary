@@ -402,17 +402,7 @@ fusedTriadicTensorStreamFuelModel : GohFuel cap -> List Bit3 -> List Bit3
 fusedTriadicTensorStreamFuelModel fuel bits =
   fusedTriadicTensorStreamNat (gohSteps fuel) bits
 
-||| O(1) allocation deforested stream transducer folding 3-valued Möbius transform across Triadic streams using BoxNat fuel.
-public export
-fusedTriadicTensorStreamBoxNat : BoxNat -> List Bit3 -> List Bit3
-fusedTriadicTensorStreamBoxNat bn bits = fusedTriadicTensorStreamNat (boxNatToNat bn) bits
 
-||| O(1) allocation deforested stream transducer folding 3-valued Möbius transform across Triadic streams.
-public export
-fusedTriadicTensorStream : Fuel -> List Bit3 -> List Bit3
-fusedTriadicTensorStream (More f) bits =
-  fusedTriadicTensorStreamNat (gohSteps (gohFuelForCapacity (length bits))) bits
-fusedTriadicTensorStream Dry _ = []
 
 ------------------------------------------------------------------------
 -- 8. 2LTT STAGING CODE GENERATOR TRANSDUCER
