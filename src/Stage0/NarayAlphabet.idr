@@ -141,6 +141,22 @@ InvertibleScaleTransform Bit3 Integer where
 -- STREAMING HORNER TERNARY EXPANSION
 ------------------------------------------------------------------------
 
+||| Evaluates a stream of balanced ternary trits into an integer value via fused Horner expansion (radix = 3) with model-indexed GohFuel.
+public export
+streamHornerTernaryFuelModel : GohFuel cap -> FusedStream Bit3 -> BoxInt
+streamHornerTernaryFuelModel fuel strm =
+  foldStreamFuelModel fuel
+    (\acc, t =>
+      let tInt = intToBoxInt (bit3ToInt t)
+      in addBox (mulBox acc (intToBoxInt 3)) tInt)
+    (intToBoxInt 0)
+    strm
+
+||| Evaluates a stream of balanced ternary trits into an integer value via fused Horner expansion using canonical Goh fuel derived from capacity.
+public export
+streamHornerTernaryGoh : (capacity : Nat) -> FusedStream Bit3 -> BoxInt
+streamHornerTernaryGoh cap = streamHornerTernaryFuelModel (gohFuelForCapacity cap)
+
 ||| Evaluates a stream of balanced ternary trits into an integer value via fused Horner expansion (radix = 3).
 public export
 streamHornerTernary : Fuel -> FusedStream Bit3 -> BoxInt
@@ -158,8 +174,8 @@ auditStreamHornerTernaryProof : Bool
 auditStreamHornerTernaryProof =
   let tritStream3 = stream [Bit3PlusOne, Bit3Zero, Bit3Zero]
       tritStream4 = stream [Bit3PlusOne, Bit3Zero, Bit3Zero, Bit3Zero]
-      v9  = streamHornerTernary (limit 3) tritStream3
-      v27 = streamHornerTernary (limit 4) tritStream4
+      v9  = streamHornerTernaryFuelModel (gohFuelForCapacity 3) tritStream3
+      v27 = streamHornerTernaryFuelModel (gohFuelForCapacity 4) tritStream4
   in unwrapBox v9 == 9 && unwrapBox v27 == 27
 
 ------------------------------------------------------------------------
