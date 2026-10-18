@@ -6,12 +6,10 @@ import Stage0.Multiset
 import Stage0.BoxInt
 import Stage0.OnSeq.FusedStream
 import Stage1.Order.Preorder
-import Stage1.TypeTheory.Staging
-import Stage1.TypeTheory.TwoLevel
 import Stage1.TypeTheory.Smoothness
 import Data.Fuel
 import public Stage0.NarayAlphabet
-
+import Stage1.TypeTheory.Staging
 
 %default total
 
