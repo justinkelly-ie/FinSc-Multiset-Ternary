@@ -176,7 +176,7 @@ auditStreamHornerTernaryProof =
       tritStream4 = stream [Bit3PlusOne, Bit3Zero, Bit3Zero, Bit3Zero]
       v9  = streamHornerTernaryFuelModel (gohFuelForCapacity 3) tritStream3
       v27 = streamHornerTernaryFuelModel (gohFuelForCapacity 4) tritStream4
-  in unwrapBox v9 == 9 && unwrapBox v27 == 27
+  in v9 == intToBoxInt 9 && v27 == intToBoxInt 27
 
 ------------------------------------------------------------------------
 -- ELLIPTIC 27 CANONICAL TERNARY EMBEDDING (RULE 03)
@@ -206,9 +206,8 @@ intToBit3Rem n =
 ||| Decodes an integer scalar in [-13, 13] into a 3-trit register in balanced ternary:
 public export
 boxIntToVect3Trits : BoxInt -> Vect 3 Bit3
-boxIntToVect3Trits b =
-  let n = unwrapBox b
-      (t0, q0) = intToBit3Rem n
+boxIntToVect3Trits (MkBoxInt n) =
+  let (t0, q0) = intToBit3Rem n
       (t1, q1) = intToBit3Rem q0
       (t2, _)  = intToBit3Rem q1
   in [t2, t1, t0]
@@ -236,7 +235,7 @@ auditTernaryDepScaleTransformProof =
       rtMax = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} bMax
       rtMin = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} bMin
       rtZero = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} bZero
-  in unwrapBox bMax == 13 && unwrapBox bMin == -13 && unwrapBox bZero == 0
+  in bMax == intToBoxInt 13 && bMin == intToBoxInt (-13) && boxIsZero bZero
      && rtMax == tMax && rtMin == tMin && rtZero == tZero
 
 public export

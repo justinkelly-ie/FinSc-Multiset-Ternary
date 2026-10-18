@@ -131,7 +131,7 @@ auditHornerTernaryStreamProof =
   let coeffs = [intToBoxInt 1, intToBoxInt 2, intToBoxInt 0]
       x = intToBoxInt 3
       val = evalHornerVectTernary coeffs x
-  in unwrapBox val == 15
+  in val == intToBoxInt 15
 
 --------------------------------------------------------------------------------
 -- 3. DEGREE-CERTIFIED NARAYANA POLYNOMIAL REPRESENTATION (TRACK 3)
@@ -160,6 +160,6 @@ auditNarayanaDepPolyCatalanSumProof =
       sumP2 = evalDepPolynumber p2 (intToBoxInt 1)
       p3 = narayanaDepPoly 3 -- Order n = 4, degree 3: C_4 = 14
       sumP3 = evalDepPolynumber p3 (intToBoxInt 1)
-  in (unwrapBox sumP2 == 5) && (unwrapBox sumP3 == 14)
+  in (sumP2 == intToBoxInt 5) && (sumP3 == intToBoxInt 14)
 
 
