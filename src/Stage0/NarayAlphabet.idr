@@ -212,14 +212,14 @@ boxIntToVect3Trits (MkBoxInt n) =
       (t2, _)  = intToBit3Rem q1
   in [t2, t1, t0]
 
-||| Canonical Elliptic 27 Manifest Canvas Ternary Embedding:
+||| Canonical Elliptic Manifest Canvas Ternary Embedding:
 ||| Maps 3-trit registers (3^3 = 27) directly into the Elliptic lattice state capacity.
 public export
-DepScaleTransform Stage1.TypeTheory.Smoothness.dimElliptic27 Stage1.TypeTheory.Smoothness.dimElliptic27 (Vect 3 Bit3) BoxInt where
+DepScaleTransform Stage1.TypeTheory.Smoothness.dimElliptic Stage1.TypeTheory.Smoothness.dimElliptic (Vect 3 Bit3) BoxInt where
   depScaleTransform = vect3TritsToBoxInt
 
 public export
-InvertibleDepScaleTransform Stage1.TypeTheory.Smoothness.dimElliptic27 Stage1.TypeTheory.Smoothness.dimElliptic27 (Vect 3 Bit3) BoxInt where
+InvertibleDepScaleTransform Stage1.TypeTheory.Smoothness.dimElliptic Stage1.TypeTheory.Smoothness.dimElliptic (Vect 3 Bit3) BoxInt where
   invertDepScaleTransform = boxIntToVect3Trits
 
 ||| Audits the roundtrip bijection for the 27 ternary states:
@@ -229,12 +229,12 @@ auditTernaryDepScaleTransformProof =
   let tMax : Vect 3 Bit3 = [Bit3PlusOne, Bit3PlusOne, Bit3PlusOne]
       tMin : Vect 3 Bit3 = [Bit3MinusOne, Bit3MinusOne, Bit3MinusOne]
       tZero : Vect 3 Bit3 = [Bit3Zero, Bit3Zero, Bit3Zero]
-      bMax = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} tMax
-      bMin = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} tMin
-      bZero = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} tZero
-      rtMax = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} bMax
-      rtMin = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} bMin
-      rtZero = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic27} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic27} bZero
+      bMax = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic} tMax
+      bMin = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic} tMin
+      bZero = depScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic} tZero
+      rtMax = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic} bMax
+      rtMin = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic} bMin
+      rtZero = invertDepScaleTransform {sourceDim = Stage1.TypeTheory.Smoothness.dimElliptic} {targetDim = Stage1.TypeTheory.Smoothness.dimElliptic} bZero
   in bMax == intToBoxInt 13 && bMin == intToBoxInt (-13) && boxIsZero bZero
      && rtMax == tMax && rtMin == tMin && rtZero == tZero
 
