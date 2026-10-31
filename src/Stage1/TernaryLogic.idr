@@ -356,11 +356,27 @@ fastTriadicMobiusStream table =
         then Done
         else Yield (MkTriadicStep stepId (evalIdx tbl idx)) (stepId + 1, S idx)
 
+||| Zero-allocation deforested triadic tensor stream transducer using fastTriadicMobiusStream and Nat fuel steps.
+public export
+fastFusedTriadicTensorStreamNat : Nat -> List Bit3 -> List Bit3
+fastFusedTriadicTensorStreamNat fuel bits =
+  map bit3Val (runFueledStreamNat fuel (fastTriadicMobiusStream bits))
+
 ||| Zero-allocation deforested triadic tensor stream transducer using fastTriadicMobiusStream and model-indexed GohFuel.
 public export
 fastFusedTriadicTensorStreamFuelModel : GohFuel cap -> List Bit3 -> List Bit3
-fastFusedTriadicTensorStreamFuelModel fuel bits =
-  map bit3Val (runFueledStreamFuelModel fuel (fastTriadicMobiusStream bits))
+fastFusedTriadicTensorStreamFuelModel fuel = fastFusedTriadicTensorStreamNat (gohSteps fuel)
+
+||| Zero-allocation deforested triadic tensor stream transducer bounded by capacity of bits.
+public export
+fastFusedTriadicTensorStreamGoh : List Bit3 -> List Bit3
+fastFusedTriadicTensorStreamGoh bits =
+  fastFusedTriadicTensorStreamFuelModel (gohFuelForCapacity (length bits)) bits
+
+||| Parameterized transducer alias.
+public export
+fastFusedTriadicTensorStream : GohFuel cap -> List Bit3 -> List Bit3
+fastFusedTriadicTensorStream = fastFusedTriadicTensorStreamFuelModel
 
 ||| Compile-time audit verifying streamTernaryTruthTable on 3-valued Kleene AND and deforested triadic stream.
 public export
@@ -392,6 +408,12 @@ public export
 fusedTriadicTensorStreamFuelModel : GohFuel cap -> List Bit3 -> List Bit3
 fusedTriadicTensorStreamFuelModel fuel bits =
   fusedTriadicTensorStreamNat (gohSteps fuel) bits
+
+||| Bounded by capacity of input bits.
+public export
+fusedTriadicTensorStreamGoh : List Bit3 -> List Bit3
+fusedTriadicTensorStreamGoh bits =
+  fusedTriadicTensorStreamFuelModel (gohFuelForCapacity (length bits)) bits
 
 
 
