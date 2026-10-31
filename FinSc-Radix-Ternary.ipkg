@@ -6,10 +6,7 @@ brief   = "Layer 2b Dependent Alphabet (F2 -> F3) and Narayana Polynomial Engine
 depends = FinSc-Multiset, FinSc-Metric-Substrate, base, linear
 sourcedir = "src"
 
-modules = Ternary,
-          Ternary.Stage0,
-          Ternary.Stage1,
-          Stage0.NarayAlphabet,
+modules = Stage0.NarayAlphabet,
           Stage0.NarayState,
           Stage0.NarayElab,
           Stage1.TernaryLogic,

@@ -7,7 +7,6 @@ import Stage0.BoxInt
 import Stage0.OnSeq.FusedStream
 import Stage1.Order.Preorder
 import Stage1.TypeTheory.Smoothness
-import Data.Fuel
 import public Stage0.NarayAlphabet
 import Stage1.TypeTheory.Staging
 
@@ -356,12 +355,6 @@ fastTriadicMobiusStream table =
       if idx >= len
         then Done
         else Yield (MkTriadicStep stepId (evalIdx tbl idx)) (stepId + 1, S idx)
-
-||| Zero-allocation deforested triadic tensor stream transducer using fastTriadicMobiusStream.
-public export
-fastFusedTriadicTensorStream : Fuel -> List Bit3 -> List Bit3
-fastFusedTriadicTensorStream f bits =
-  map bit3Val (runFueledStream f (fastTriadicMobiusStream bits))
 
 ||| Zero-allocation deforested triadic tensor stream transducer using fastTriadicMobiusStream and model-indexed GohFuel.
 public export
