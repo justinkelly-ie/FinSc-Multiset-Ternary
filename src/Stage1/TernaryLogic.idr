@@ -378,30 +378,16 @@ public export
 fastFusedTriadicTensorStream : GohFuel cap -> List Bit3 -> List Bit3
 fastFusedTriadicTensorStream = fastFusedTriadicTensorStreamFuelModel
 
-||| Compile-time audit verifying streamTernaryTruthTable on 3-valued Kleene AND and deforested triadic stream.
-public export
-auditTernaryTruthTableStreamProof : Bool
-auditTernaryTruthTableStreamProof =
-  let andFn : List Bit3 -> Bit3
-      andFn [x, y] = andBit3 x y
-      andFn [x] = x
-      andFn _ = Bit3Zero
-      ttStrm = streamTernaryTruthTable 2 andFn
-      outs = foldStreamNat 9 (\acc, (_, b) => b :: acc) (the (List Bit3) []) ttStrm
-      fastTrans = fastFusedTriadicTensorStreamFuelModel (gohFuelForCapacity 3) [Bit3PlusOne, Bit3MinusOne, Bit3Zero]
-  in length outs == 9 && length fastTrans == 3
-
 ||| O(1) allocation deforested stream transducer folding 3-valued Möbius transform across Triadic streams using total structural Nat fuel bounds.
 public export
 fusedTriadicTensorStreamNat : (fuel : Nat) -> List Bit3 -> List Bit3
 fusedTriadicTensorStreamNat fuel bits =
-  fusedHylomorphismNat fuel
-    (\(idx, st) => case st of
-                     [] => Done
-                     b :: rest => Yield (MkTriadicStep idx b) (idx + 1, rest))
-    (\step, acc => bit3Val step :: acc)
-    []
-    (1, mobiusTransform3 bits)
+  runFueledStreamNat fuel
+    (unfoldStream
+      (\(idx, st) => case st of
+                       [] => Done
+                       b :: rest => Yield (bit3Val (MkTriadicStep idx b)) (idx + 1, rest))
+      (1, mobiusTransform3 bits))
 
 ||| O(1) allocation deforested stream transducer folding 3-valued Möbius transform across Triadic streams using model-indexed GohFuel.
 public export
@@ -414,6 +400,23 @@ public export
 fusedTriadicTensorStreamGoh : List Bit3 -> List Bit3
 fusedTriadicTensorStreamGoh bits =
   fusedTriadicTensorStreamFuelModel (gohFuelForCapacity (length bits)) bits
+
+||| Compile-time audit verifying streamTernaryTruthTable on 3-valued Kleene AND and deforested triadic stream.
+public export
+auditTernaryTruthTableStreamProof : Bool
+auditTernaryTruthTableStreamProof =
+  let andFn : List Bit3 -> Bit3
+      andFn [x, y] = andBit3 x y
+      andFn [x] = x
+      andFn _ = Bit3Zero
+      ttStrm = streamTernaryTruthTable 2 andFn
+      outs = map snd (runFueledStreamNat 9 ttStrm)
+      sample = [Bit3PlusOne, Bit3MinusOne, Bit3Zero]
+      fastTrans = fastFusedTriadicTensorStreamFuelModel (gohFuelForCapacity 3) sample
+      fusedTrans = fusedTriadicTensorStreamGoh sample
+  in length outs == 9 &&
+     length fastTrans == 3 &&
+     fusedTrans == mobiusTransform3 sample
 
 
 
