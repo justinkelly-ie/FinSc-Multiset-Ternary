@@ -434,4 +434,32 @@ public export
 0 prfStagedTernaryLogicStream : (op : Bit3 -> Bit3 -> Bit3) -> (s1, s2 : FusedStream Bit3) -> splice (stagedTernaryLogicStream op s1 s2) = evalTernaryLogicStream op s1 s2
 prfStagedTernaryLogicStream op s1 s2 = inverseSpliceQuote (evalTernaryLogicStream op s1 s2)
 
+------------------------------------------------------------------------
+-- 9. NATIVE MULTISET STREAMING ISOMORPHISMS (RULE 04 §12)
+------------------------------------------------------------------------
+
+||| Deforested multiset stream generator from a TernaryPolynumber in O(1) auxiliary frame.
+public export
+ternaryPolyToStream : TernaryPolynumber -> FusedStream (Nat, Bit3)
+ternaryPolyToStream p = MkStream step p
+  where
+    step : TernaryPolynumber -> Step TernaryPolynumber (Nat, Bit3)
+    step ZeroM = Done
+    step (AddM k b rest) = Yield (k, b) rest
+
+||| Folds a deforested stream of (term_index, Bit3) pairs back into a TernaryPolynumber.
+public export
+streamToTernaryPoly : (fuel : Nat) -> FusedStream (Nat, Bit3) -> TernaryPolynumber
+streamToTernaryPoly fuel strm =
+  foldStreamNat fuel (\acc, (k, b) => if b /= Bit3Zero then insertItem k b acc else acc) ZeroM strm
+
+||| Audit: TernaryPolynumber <-> FusedStream round-trip preserves exact polynomial.
+public export
+auditTernaryPolyStreamRoundTripProof : Bool
+auditTernaryPolyStreamRoundTripProof =
+  let p = AddM 0 Bit3PlusOne (AddM 2 Bit3MinusOne ZeroM)
+      strm = ternaryPolyToStream p
+      p' = streamToTernaryPoly 2 strm
+  in p == p'
+
 

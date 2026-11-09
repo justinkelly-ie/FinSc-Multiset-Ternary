@@ -120,3 +120,25 @@ proofBooleMobiusSelfInverse (Bit2Zero :: Bit2Zero :: []) = Refl
 proofBooleMobiusSelfInverse (Bit2Zero :: Bit2One  :: []) = Refl
 proofBooleMobiusSelfInverse (Bit2One  :: Bit2Zero :: []) = Refl
 proofBooleMobiusSelfInverse (Bit2One  :: Bit2One  :: []) = Refl
+
+------------------------------------------------------------------------
+-- 4. LAYER 3 (RADIX-BINARY) BOOLE HOMOMORPHISM THEOREMS
+------------------------------------------------------------------------
+
+||| Theorem 10: Bit2 addition in F2 is homomorphic to canonical Bit addition in Layer 3.
+public export
+proofBit2IsomorphicToBitAdd : (b1, b2 : Bit2) ->
+                              bit2ToBit (addBit2 b1 b2) = addBit (bit2ToBit b1) (bit2ToBit b2)
+proofBit2IsomorphicToBitAdd Bit2Zero Bit2Zero = Refl
+proofBit2IsomorphicToBitAdd Bit2Zero Bit2One  = Refl
+proofBit2IsomorphicToBitAdd Bit2One  Bit2Zero = Refl
+proofBit2IsomorphicToBitAdd Bit2One  Bit2One  = Refl
+
+||| Theorem 11: Bit2 multiplication in F2 is homomorphic to canonical Bit multiplication in Layer 3.
+public export
+proofBit2IsomorphicToBitMul : (b1, b2 : Bit2) ->
+                              bit2ToBit (mulBit2 b1 b2) = mulBit (bit2ToBit b1) (bit2ToBit b2)
+proofBit2IsomorphicToBitMul Bit2Zero Bit2Zero = Refl
+proofBit2IsomorphicToBitMul Bit2Zero Bit2One  = Refl
+proofBit2IsomorphicToBitMul Bit2One  Bit2Zero = Refl
+proofBit2IsomorphicToBitMul Bit2One  Bit2One  = Refl

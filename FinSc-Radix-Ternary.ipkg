@@ -1,9 +1,9 @@
 package FinSc-Radix-Ternary
 version = 0.2.0
 authors = "Justin Kelly"
-brief   = "Layer 2b Dependent Alphabet (F2 -> F3) and Narayana Polynomial Engine."
+brief   = "Layer 4 Balanced Ternary Field F3, 27-State Elliptic Lattice & Narayana Dyck Sifting"
 
-depends = FinSc-Multiset, FinSc-Metric-Substrate, base, linear
+depends = FinSc-Multiset, FinSc-Metric-Substrate, FinSc-Radix-Binary, base, linear
 sourcedir = "src"
 
 modules = Stage0.NarayAlphabet,
