@@ -10,7 +10,6 @@ import Data.Vect
 ------------------------------------------------------------------------
 
 ||| Addition in the Algebra of Boole (XOR): 1 + 1 = 0.
-%inline
 public export
 addBit2 : Bit2 -> Bit2 -> Bit2
 addBit2 Bit2Zero b2       = b2
@@ -18,7 +17,6 @@ addBit2 b1       Bit2Zero = b1
 addBit2 Bit2One  Bit2One  = Bit2Zero
 
 ||| Multiplication in the Algebra of Boole (AND).
-%inline
 public export
 mulBit2 : Bit2 -> Bit2 -> Bit2
 mulBit2 Bit2Zero _        = Bit2Zero
@@ -26,19 +24,16 @@ mulBit2 _        Bit2Zero = Bit2Zero
 mulBit2 Bit2One  Bit2One  = Bit2One
 
 ||| Complement in the Algebra of Boole: ¬x = 1 + x.
-%inline
 public export
 notBit2 : Bit2 -> Bit2
 notBit2 b = addBit2 Bit2One b
 
 ||| Inclusive OR derived algebraically: x ∨ y = x + y + x*y.
-%inline
 public export
 orBit2 : Bit2 -> Bit2 -> Bit2
 orBit2 b1 b2 = addBit2 (addBit2 b1 b2) (mulBit2 b1 b2)
 
 ||| Subtraction in F2: x - y = x + y (since -1 = +1 mod 2).
-%inline
 public export
 subBit2 : Bit2 -> Bit2 -> Bit2
 subBit2 b1 b2 = addBit2 b1 b2
@@ -108,7 +103,6 @@ proofBooleSubtraction Bit2One  Bit2One  = Refl
 ------------------------------------------------------------------------
 
 ||| 2-element Boole-Möbius transform over F2: T([a, b]) = [a, a + b].
-%inline
 public export
 mobiusTransform2 : Vect 2 Bit2 -> Vect 2 Bit2
 mobiusTransform2 (a :: b :: []) = a :: addBit2 a b :: []

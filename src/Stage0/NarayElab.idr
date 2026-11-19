@@ -15,13 +15,11 @@ powerNat _ Z = 1
 powerNat base (S p) = base * powerNat base p
 
 ||| Verifies that the sum of Narayana numbers sum_{k=1}^n N(n, k) equals Catalan number C_n.
-%inline
 public export
 auditCatalanProof : (n : Nat) -> Bool
 auditCatalanProof n = (sumNarayanaNumbers n) == (catalanNumber n)
 
 ||| Verifies the multiplicative unit group order |F_n^\times|.
-%inline
 public export
 auditUnitGroupProof : (n : Nat) -> Bool
 auditUnitGroupProof 2 = unitGroupSize 2 == 1
@@ -29,7 +27,6 @@ auditUnitGroupProof 3 = unitGroupSize 3 == 2
 auditUnitGroupProof _ = False
 
 ||| Verifies metric manifold capacity n^n (4 for binary Boole, 27 for ternary Universe2).
-%inline
 public export
 auditMetricCapacityProof : (n : Nat) -> Bool
 auditMetricCapacityProof 2 = powerNat 2 2 == 4
@@ -37,7 +34,6 @@ auditMetricCapacityProof 3 = powerNat 3 3 == 27
 auditMetricCapacityProof _ = False
 
 ||| Verifies all Algebra of Boole fundamental ring properties (x+x=0, x^2=x, NOT(0)=1).
-%inline
 public export
 auditBooleRingProof : Bool
 auditBooleRingProof = 

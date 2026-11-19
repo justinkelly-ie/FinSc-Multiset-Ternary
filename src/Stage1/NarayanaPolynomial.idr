@@ -1,6 +1,7 @@
 module Stage1.NarayanaPolynomial
 
 import public Stage0.BoxInt
+import Stage0.BoxNat
 import Stage0.OnSeq.FusedStream
 import Stage1.Polynumber
 import Data.Vect
@@ -110,8 +111,8 @@ streamTernaryRadixDigits val =
     if n == 0
       then Done
       else
-        let rem : Nat = n `mod` 3
-            nextN : Nat = n `div` 3
+        let rem : Nat = natModFast n 3
+            nextN : Nat = natDivFast n 3
             trit : Integer = if rem == 2 then (-1) else cast rem
             adjustedNext : Nat = if rem == 2 then nextN + 1 else nextN
         in Yield trit adjustedNext

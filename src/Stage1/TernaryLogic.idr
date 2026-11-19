@@ -4,6 +4,7 @@ import Data.List
 import Data.Nat
 import Stage0.Multiset
 import Stage0.BoxInt
+import Stage0.BoxNat
 import Stage0.OnSeq.FusedStream
 import Stage1.Order.Preorder
 import Stage1.TypeTheory.Smoothness
@@ -17,7 +18,6 @@ import Stage1.TypeTheory.Staging
 ------------------------------------------------------------------------
 
 ||| 3-Valued Kleene Negation: ¬(-1) = +1, ¬(0) = 0, ¬(+1) = -1.
-%inline
 public export
 notBit3 : Bit3 -> Bit3
 notBit3 Bit3MinusOne = Bit3PlusOne
@@ -26,7 +26,6 @@ notBit3 Bit3PlusOne  = Bit3MinusOne
 
 ||| 3-Valued Kleene AND (MIN operator over {-1, 0, +1}):
 ||| -1 ∧ x = -1,  +1 ∧ x = x,  0 ∧ 0 = 0.
-%inline
 public export
 andBit3 : Bit3 -> Bit3 -> Bit3
 andBit3 Bit3MinusOne _            = Bit3MinusOne
@@ -37,7 +36,6 @@ andBit3 Bit3Zero     Bit3Zero     = Bit3Zero
 
 ||| 3-Valued Kleene OR (MAX operator over {-1, 0, +1}):
 ||| +1 ∨ x = +1,  -1 ∨ x = x,  0 ∨ 0 = 0.
-%inline
 public export
 orBit3 : Bit3 -> Bit3 -> Bit3
 orBit3 Bit3PlusOne  _           = Bit3PlusOne
@@ -48,14 +46,12 @@ orBit3 Bit3Zero    Bit3Zero    = Bit3Zero
 
 ||| Field addition over F3 (balanced mod 3):
 ||| (+1) + (+1) = -1, (-1) + (-1) = +1, (+1) + (-1) = 0.
-%inline
 public export
 addBit3 : Bit3 -> Bit3 -> Bit3
 addBit3 b1 b2 = case addNaray (Naray3 b1) (Naray3 b2) of Naray3 res => res
 
 ||| Field multiplication over F3 (balanced mod 3):
 ||| (-1) * (-1) = +1, (+1) * (-1) = -1, 0 * x = 0.
-%inline
 public export
 mulBit3 : Bit3 -> Bit3 -> Bit3
 mulBit3 b1 b2 = case mulNaray (Naray3 b1) (Naray3 b2) of Naray3 res => res
@@ -287,8 +283,8 @@ public export
 decodeTernaryBits : (fuel : Nat) -> Nat -> List Bit3
 decodeTernaryBits Z _ = []
 decodeTernaryBits (S f) n =
-  let rem : Nat = n `mod` 3
-      nextN : Nat = n `div` 3
+  let rem : Nat = natModFast n 3
+      nextN : Nat = natDivFast n 3
       b : Bit3 = case rem of
                    1 => Bit3PlusOne
                    2 => Bit3MinusOne
@@ -425,7 +421,7 @@ auditTernaryTruthTableStreamProof =
 ------------------------------------------------------------------------
 
 ||| Deforested 2LTT staged code generator transducer for triadic stream evaluation.
-%inline public export
+public export
 stagedTernaryLogicStream : (op : Bit3 -> Bit3 -> Bit3) -> FusedStream Bit3 -> FusedStream Bit3 -> Code (FusedStream Bit3)
 stagedTernaryLogicStream op s1 s2 = quote (evalTernaryLogicStream op s1 s2)
 
